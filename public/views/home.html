@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Node Logger</title>
+    <script src="/public/scripts/jquery-2-1-4.js" charset="utf-8"></script>
+    <script src="/public/scripts/socket.io.min.js" charset="utf-8"></script>
+    <style media="screen">
+      body {
+        font-family: sans-serif !important;
+      }
+
+      .container {
+        padding: 50px;
+        padding-top: 5px;
+        height: auto;
+        background-color: rgba(253, 249, 249, 0.78);
+      }
+
+      .header {
+        display: inline-flex;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div style="width:70%">
+          <h2>Node - Logger</h2>
+        </div>
+        <div style="width:30%">
+          <h4 style="float:right;">V.0.0.1</h4>
+        </div>
+      </div>
+      <br>
+      <br>
+      <h3 id="status">
+
+      </h3>
+      <br><br>
+      <h4 id="votes">
+
+      </h4>
+    </div>
+  </body>
+  <script type="text/javascript">
+
+   var socket = io.connect('http://localhost:3000');
+
+   socket.on('news', function (data) {
+     console.log(data);
+     var d = $('#votes').html();
+     d += data.hello;
+     $("#votes").text(d);
+     socket.emit('response', { hello: 'world' });
+   });
+
+  /* if (!!window.EventSource) {
+    var source = new EventSource('http://localhost:3000/stream')
+
+    source.addEventListener('message', function(e) {
+      votes = JSON.parse(e.data)
+      $("#votes").text(votes);
+    }, false)
+
+    source.addEventListener('open', function(e) {
+      $("#state").text("Connected")
+    }, false)
+
+    source.addEventListener('error', function(e) {
+      if (e.target.readyState == EventSource.CLOSED) {
+        $("#state").text("Disconnected")
+      }
+      else if (e.target.readyState == EventSource.CONNECTING) {
+        $("#state").text("Connecting...")
+      }
+    }, false)
+  } else {
+    console.log("Your browser doesn't support SSE")
+  } */
+  </script>
+</html>
