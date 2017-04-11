@@ -23,17 +23,17 @@ var server = http.createServer(app);
 var io = require('socket.io')(server);
 
 io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('response', function(){
-    socket.emit('news', { hello: 'world' });
+  socket.emit('online', { timer: new Date().toISOString(), message: 'Listening to node logger' });
+
+  socket.on('start', function(){
+    socket.emit('online', { timer: new Date().toISOString(), message: 'sample data' });
+  })
+
+  socket.on('stop', function(){
+    console.log('socket stopped');
+    socket.emit('close', { });
   })
 });
-
-function sendLog(){
-  setInterval(function(){
-    socket.emit('news', { hello: 'world' });
-  },100)
-}
 
 server.listen(PORT, function(){
   console.log('Node logger is activated, Visit port #'+PORT);

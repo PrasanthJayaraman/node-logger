@@ -21,6 +21,23 @@
         display: inline-flex;
         width: 100%;
       }
+
+      .logger {
+        padding: 5px !important;
+        border: 2px solid #ccc;
+        height: 600px;
+        overflow-y: scroll;
+        font-family: monospace;
+      }
+
+      .hide {
+        display: none;
+      }
+
+      .show {
+        display: block;
+      }
+
     </style>
   </head>
   <body>
@@ -35,49 +52,43 @@
       </div>
       <br>
       <br>
-      <h3 id="status">
+      <div>
+        <input type="button" id="start" class="hide" value="Start">
+        <input type="button" id="stop" class="show" value="Stop">
+      </div>
+      <div class="logger" id="logger">
 
-      </h3>
-      <br><br>
-      <h4 id="votes">
-
-      </h4>
+      </div>
     </div>
   </body>
   <script type="text/javascript">
 
    var socket = io.connect('http://localhost:3000');
 
-   socket.on('news', function (data) {
-     console.log(data);
-     var d = $('#votes').html();
-     d += data.hello;
-     $("#votes").text(d);
-     socket.emit('response', { hello: 'world' });
+   socket.on('online', function (data) {
+     var div = document.getElementById('logger');
+     div.innerHTML += '<br />' + data.timer + ": " + data.message;
+     socket.emit('start', { hello: 'world' });
    });
 
-  /* if (!!window.EventSource) {
-    var source = new EventSource('http://localhost:3000/stream')
+   socket.on('close')
 
-    source.addEventListener('message', function(e) {
-      votes = JSON.parse(e.data)
-      $("#votes").text(votes);
-    }, false)
+   $('#start').click(function () {
+       socket.open();
+       document.getElementById('start').className = "hide";
+       document.getElementById('stop').className = "show";
+   })
 
-    source.addEventListener('open', function(e) {
-      $("#state").text("Connected")
-    }, false)
+   $('#stop').click(function () {
+     socket.disconnect();
+     document.getElementById('stop').className = "hide";
+     document.getElementById('start').className = "show";
+   })
 
-    source.addEventListener('error', function(e) {
-      if (e.target.readyState == EventSource.CLOSED) {
-        $("#state").text("Disconnected")
-      }
-      else if (e.target.readyState == EventSource.CONNECTING) {
-        $("#state").text("Connecting...")
-      }
-    }, false)
-  } else {
-    console.log("Your browser doesn't support SSE")
-  } */
-  </script>
+   window.setInterval(function() {
+      var elem = document.getElementById('logger');
+      elem.scrollTop = elem.scrollHeight;
+   }, 100);
+
+   </script>
 </html>
