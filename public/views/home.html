@@ -65,30 +65,40 @@
 
    var socket = io.connect('http://localhost:3000');
 
+   var intervalData, intervalScroll;
+
    socket.on('online', function (data) {
      var div = document.getElementById('logger');
      div.innerHTML += '<br />' + data.timer + ": " + data.message;
-     socket.emit('start', { hello: 'world' });
+     intervalData = setInterval(receiveData, 100);
+     intervalScroll = setInterval(scroll, 100);
    });
 
-   socket.on('close')
+   function receiveData(){
+     socket.emit('start', { hello: 'world' });
+   }
 
    $('#start').click(function () {
        socket.open();
+       intervalData = setInterval(receiveData, 100);
        document.getElementById('start').className = "hide";
        document.getElementById('stop').className = "show";
    })
 
    $('#stop').click(function () {
      socket.disconnect();
+     clearInterval(intervalScroll);
+     clearInterval(intervalData);
      document.getElementById('stop').className = "hide";
      document.getElementById('start').className = "show";
    })
 
-   window.setInterval(function() {
+   intervalScroll = setInterval(scroll, 100);
+
+   function scroll() {
       var elem = document.getElementById('logger');
       elem.scrollTop = elem.scrollHeight;
-   }, 100);
+    }
 
    </script>
 </html>
